@@ -65,4 +65,8 @@ Thumbs.db
 # Local development
 .env.local
 temp/
-tmp/ 
+tmp/
+
+# Data folders
+faqs/
+data/ 
