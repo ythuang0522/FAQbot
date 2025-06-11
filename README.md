@@ -1,16 +1,77 @@
-# 🤖 Enhanced FAQ Chatbot
+# 🤖 Enhanced FAQ Chatbot with Dual Interfaces
 
-A robust, production-ready FAQ chatbot powered by OpenAI's function-calling capabilities and built with FastAPI. The chatbot intelligently routes questions to appropriate FAQ categories (Sales, Labs, Reports) and provides accurate, context-aware responses.
+A robust, production-ready FAQ chatbot powered by OpenAI's function-calling capabilities and built with FastAPI. The chatbot provides intelligent responses through **two interfaces**: a **web chat interface** and a **Line messaging bot**, both accessing the same core AI services.
 
 ## 🌟 Features
+- **Intelligent Question Classification**: Automatically routes questions to appropriate knowledge sources using OpenAI function calling
+  - 📚 **FAQ Integration**: FAQ text files (Sales, Labs, Reports)
+  - 📊 **Database Querying**: Pathogen database statistics and organism information
 
-- **Intelligent Question Classification**: Automatically routes questions to appropriate knowledge sources
-- **Multi-Language Support**: Supports Traditional Chinese, Simplified Chinese, and English
-- **FAQ Integration**: Access to comprehensive business FAQ database
-- **Database Querying**: Real-time pathogen database statistics and organism information
-- **Modern Web Interface**: Clean, responsive UI with typing indicators
-- **Conversation Memory**: Maintains context across multiple questions
-- **Error Handling**: Comprehensive error handling with helpful feedback
+## 🏗️ Architecture Overview
+
+```mermaid
+sequenceDiagram
+    participant WU as 👤 Web User
+    participant LU as 📱 Line User
+    participant F as 🌐 Web Frontend
+    participant L as 🤖 Line Bot
+    participant API as 🚀 FastAPI
+    participant OS as 🤖 OpenAI Service
+    participant OAI as 🧠 OpenAI API
+    participant Data as 📄 Data Sources
+
+    Note over WU,LU: Two Interface Options
+
+    rect rgb(230, 245, 255)
+        Note over WU,F: Web Interface Flow
+        WU->>F: Submit question
+        F->>API: POST /api/chat
+    end
+
+    rect rgb(255, 230, 245)
+        Note over LU,L: Line Interface Flow
+        LU->>L: Send Line message
+        L->>API: POST /webhook/line
+    end
+
+    Note over API,Data: Shared Core Processing
+
+    API->>OS: get_faq_answer()
+    
+    Note over OS,OAI: Step 1: Function Selection
+    OS->>OAI: What functions to call?
+    OAI-->>OS: tool_calls[]
+    
+    Note over OS,Data: Step 2: Execute Functions
+    OS->>Data: Execute selected functions
+    Data-->>OS: Function results
+    
+    Note over OS,OAI: Step 3: Generate Answer
+    OS->>OAI: Generate answer with results
+    OAI-->>OS: Final answer
+    
+    OS-->>API: Response object
+
+    rect rgb(230, 245, 255)
+        Note over API,F: Web Response
+        API-->>F: JSON response
+        F->>WU: Display answer
+    end
+
+    rect rgb(255, 230, 245)
+        Note over API,L: Line Response
+        API-->>L: Line reply message
+        L->>LU: Send Line message
+    end
+```
+
+### Core Processing Pipeline
+
+Both interfaces use the same **3-step OpenAI function-calling strategy**:
+
+1. **Function Selection**: OpenAI determines which functions to call based on the question
+2. **Function Execution**: Execute selected functions (FAQ lookup, database queries, organism searches)
+3. **Answer Generation**: Generate natural language response using function results
 
 ## 🚀 Quick Start
 
@@ -18,6 +79,7 @@ A robust, production-ready FAQ chatbot powered by OpenAI's function-calling capa
 
 - Python 3.11+
 - OpenAI API key
+- Line Channel credentials (for Line bot functionality)
 
 ### Installation
 
@@ -49,30 +111,44 @@ uvicorn app.main:app --reload
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
 ```
 
-5. **Open your browser:**
+5. **Access the interfaces:**
+
+**Web Interface:**
 ```
-http://localhost:8000
+http://localhost:8080
 ```
+
+**Line Bot Setup:**
+1. Create a Line Developer account and Line Bot
+2. Get your Channel Access Token and Channel Secret
+3. Set the webhook URL to: `https://your-domain.com/webhook/line`
+4. Add the credentials to your `.env` file
 
 ## 📁 Project Structure
 
 ```
 FAQbot/
 ├── app/                    # Main application package
-│   ├── models/            # Pydantic data models
-│   ├── services/          # Business logic services
+│   ├── models/            # Pydantic data models & schemas
+│   ├── services/          # Core business logic services
+│   │   ├── openai_service.py    # Central AI orchestration
+│   │   ├── faq_service.py       # FAQ content management
+│   │   ├── database_service.py  # CSV data operations
+│   │   └── line_service.py      # Line bot integration
 │   ├── api/              # API routes and endpoints
+│   │   └── routes.py           # Web & Line endpoints
 │   ├── utils/            # Utilities (logging, exceptions)
 │   ├── config.py         # Configuration management
 │   └── main.py           # FastAPI application
 ├── faqs/                 # FAQ content files
-│   ├── sales.txt
-│   ├── labs.txt
-│   └── reports.txt
-├── frontend/             # Web interface
-│   ├── templates/        # Jinja2 templates
-│   └── static/          # CSS and JavaScript
-├── tests/               # Test suite
+│   ├── sales.txt         # Sales FAQ content
+│   ├── labs.txt          # Labs FAQ content
+│   └── reports.txt       # Reports FAQ content
+├── data/                 # Database files
+│   └── microbe_database.csv    # Pathogen/organism data
+├── frontend/             # Web chat interface
+│   ├── templates/        # Jinja2 HTML templates
+│   └── static/          # CSS, JavaScript, assets
 └── requirements.txt     # Python dependencies
 ```
 
@@ -80,217 +156,33 @@ FAQbot/
 
 ### Environment Variables
 
-Copy `.env.example` to `.env` and configure:
+edit `.env` 
 
 ```env
 # Required
 OPENAI_API_KEY=your_openai_api_key_here
 
+# Line Bot Configuration (Required for Line interface)
+LINE_CHANNEL_ACCESS_TOKEN=your_line_channel_access_token
+LINE_CHANNEL_SECRET=your_line_channel_secret
+
 # Optional (with defaults)
-OPENAI_MODEL=gpt-4-1106-preview
-OPENAI_MAX_TOKENS=1000
+OPENAI_MODEL=gpt-4o
+OPENAI_MAX_TOKENS=6000
 OPENAI_TEMPERATURE=0.1
-
-APP_NAME=FAQ Chatbot
-APP_VERSION=1.0.0
-DEBUG=False
-LOG_LEVEL=INFO
-
-HOST=0.0.0.0
-PORT=8000
-RELOAD=False
-
-CORS_ORIGINS=["http://localhost:3000","http://127.0.0.1:8000"]
-RATE_LIMIT_REQUESTS=60
-RATE_LIMIT_WINDOW=60
 ```
 
-## 📚 API Documentation
+## 📚 API Documentation & Interfaces
 
-Once running, access the interactive API documentation:
+### Web Interface
+Access the web chat interface at: **http://localhost:8000**
 
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
+### Line Bot Interface
+Configure Line webhook URL: **http://your-domain.com/webhook/line**
 
-### Key Endpoints
-
-- `GET /` - Web chat interface
-- `POST /api/chat` - Send a question and get an AI response
-- `GET /api/health` - Health check endpoint
-
-### Example API Usage
-
-```bash
-curl -X POST "http://localhost:8000/api/chat" \
-     -H "Content-Type: application/json" \
-     -d '{"question": "What are your pricing plans?"}'
-```
-
-Response:
-```json
-{
-  "answer": "We offer three pricing tiers: Starter ($29/month), Professional ($79/month), and Enterprise ($199/month). Each plan includes different features and usage limits.",
-  "category": "sales",
-  "conversation_id": "uuid-string",
-  "processing_time": 1.234
-}
-```
-
-## 📝 Managing FAQ Content
-
-FAQ files are stored in the `faqs/` directory as plain text files:
-
-### Format
-```
-CATEGORY FAQ
-
-Q: Question 1?
-A: Answer to question 1.
-
-Q: Question 2?
-A: Answer to question 2.
-```
 
 ### Adding New Categories
 
 1. Create a new `.txt` file in `faqs/` directory
 2. Add the category to `FAQCategory` enum in `app/models/schemas.py`
 3. Restart the application
-
-## 🧪 Testing
-
-```bash
-# Install development dependencies
-pip install -r requirements-dev.txt
-
-# Run tests
-pytest
-
-# Run with coverage
-pytest --cov=app
-
-# Run specific test file
-pytest tests/test_api.py
-```
-
-## 🐳 Docker Deployment
-
-### Build and run with Docker:
-
-```bash
-# Build image
-docker build -t faq-chatbot .
-
-# Run container
-docker run -p 8000:8000 --env-file .env faq-chatbot
-```
-
-### Using Docker Compose:
-
-```bash
-# Start services
-docker-compose up --build
-
-# Run in background
-docker-compose up -d
-```
-
-## 🔒 Security Features
-
-- **CORS Protection**: Configurable origins
-- **Rate Limiting**: 60 requests per minute per IP
-- **Security Headers**: XSS, CSRF, and content type protection
-- **Input Validation**: Pydantic models validate all inputs
-- **Error Handling**: Secure error messages without sensitive data
-
-## 📊 Monitoring & Logging
-
-### Structured Logging
-All logs are structured JSON for easy parsing:
-
-```json
-{
-  "timestamp": "2024-01-15T10:30:00Z",
-  "level": "info",
-  "logger": "app.services.openai_service",
-  "message": "Generated answer for category sales",
-  "processing_time": 1.234
-}
-```
-
-### Health Checks
-- `GET /api/health` - Application health status
-- Processing time headers on all responses
-- Request/response metrics tracking
-
-## 🚀 Production Deployment
-
-### Requirements
-- Python 3.11+
-- 2GB+ RAM recommended
-- OpenAI API access
-
-### Recommended Setup
-```bash
-# Use a process manager like systemd or supervisor
-# Example systemd service:
-
-[Unit]
-Description=FAQ Chatbot
-After=network.target
-
-[Service]
-Type=simple
-User=faqbot
-WorkingDirectory=/opt/faqbot
-Environment=PATH=/opt/faqbot/.venv/bin
-ExecStart=/opt/faqbot/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-```
-
-### Nginx Configuration
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
-    
-    location / {
-        proxy_pass http://127.0.0.1:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    }
-}
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Make your changes
-4. Run tests: `pytest`
-5. Commit changes: `git commit -am 'Add feature'`
-6. Push to branch: `git push origin feature-name`
-7. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-- **Issues**: Create an issue on GitHub
-- **Documentation**: Check the `/docs` endpoint when running
-- **API Reference**: Available at `/docs` and `/redoc`
-
-## 🔄 Changelog
-
-### v1.0.0
-- Initial release
-- OpenAI function-calling integration
-- Three FAQ categories (Sales, Labs, Reports)
-- Modern web interface
-- Production-ready features 

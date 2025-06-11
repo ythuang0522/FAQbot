@@ -2,20 +2,19 @@
 fastapi>=0.104.0
 uvicorn[standard]>=0.24.0
 
-# OpenAI & Environment
+# OpenAI Integration
 openai>=1.40.0
-python-dotenv>=1.0.0
 
 # Templating & Static Files
 jinja2>=3.1.0
 
-# Data Validation
+# Data Validation & Settings
 pydantic>=2.5.0
 pydantic-settings>=2.1.0
 
-# HTTP & Security
-httpx>=0.25.0
-python-multipart>=0.0.6
+# HTTP & Security (Note: httpx and python-multipart removed as unused)
+# httpx>=0.25.0 # REMOVED - not used
+# python-multipart>=0.0.6 # REMOVED - not used
 
 # Logging & Monitoring
 structlog>=23.2.0
