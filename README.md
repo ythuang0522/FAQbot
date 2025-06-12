@@ -97,9 +97,20 @@ pip install -r requirements.txt
 ```
 
 3. **Configure environment:**
-```bash
-cp .env.example .env
-# Edit .env and add your OpenAI API key
+edit `.env` 
+
+```
+# Required
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Line Bot Configuration (Required for Line interface)
+LINE_CHANNEL_ACCESS_TOKEN=your_line_channel_access_token
+LINE_CHANNEL_SECRET=your_line_channel_secret
+
+# Optional (with defaults)
+OPENAI_MODEL=gpt-4o
+OPENAI_MAX_TOKENS=6000
+OPENAI_TEMPERATURE=0.1
 ```
 
 4. **Run the application:**
@@ -151,34 +162,6 @@ FAQbot/
 │   └── static/          # CSS, JavaScript, assets
 └── requirements.txt     # Python dependencies
 ```
-
-## 🛠️ Configuration
-
-### Environment Variables
-
-edit `.env` 
-
-```env
-# Required
-OPENAI_API_KEY=your_openai_api_key_here
-
-# Line Bot Configuration (Required for Line interface)
-LINE_CHANNEL_ACCESS_TOKEN=your_line_channel_access_token
-LINE_CHANNEL_SECRET=your_line_channel_secret
-
-# Optional (with defaults)
-OPENAI_MODEL=gpt-4o
-OPENAI_MAX_TOKENS=6000
-OPENAI_TEMPERATURE=0.1
-```
-
-## 📚 API Documentation & Interfaces
-
-### Web Interface
-Access the web chat interface at: **http://localhost:8000**
-
-### Line Bot Interface
-Configure Line webhook URL: **http://your-domain.com/webhook/line**
 
 
 ### Adding New Categories
