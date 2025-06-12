@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 import time
 
 from app.config import get_settings
-from app.api.routes import api_router, webhook_router
+from app.api.routes import api_router
 from app.utils.logger import setup_logging, get_logger
 
 settings = get_settings()
@@ -97,16 +97,6 @@ async def add_process_time_header(request: Request, call_next):
 
 # Include the main API router in the main app
 app.include_router(api_router)
-
-# --- Create a CLEAN webhook app with NO middleware ---
-webhook_app = FastAPI()
-webhook_app.include_router(webhook_router)
-
-
-# --- Mount the clean webhook app onto the main app ---
-# All requests to /line will be handled by the webhook_app,
-# bypassing the main app's middleware.
-app.mount("/line", webhook_app)
 
 # Static files
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")

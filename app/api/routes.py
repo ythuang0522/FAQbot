@@ -13,9 +13,6 @@ from linebot.v3.exceptions import InvalidSignatureError
 # --- Main API Router (with dependencies, etc.) ---
 api_router = APIRouter()
 
-# --- Webhook Router (clean, no dependencies) ---
-webhook_router = APIRouter()
-
 router = APIRouter()
 templates = Jinja2Templates(directory="frontend/templates")
 settings = get_settings()
@@ -97,7 +94,7 @@ async def health_check():
     )
 
 
-@webhook_router.post("/callback")
+@api_router.post("/callback")
 async def line_webhook(request: Request):
     """LINE webhook endpoint."""
     logger.info("Line webhook received (in isolated app)")
@@ -116,4 +113,4 @@ async def line_webhook(request: Request):
     return {"status": "ok"}
 
 # Export routers for import in main.py
-__all__ = ["api_router", "webhook_router"] 
+__all__ = ["api_router"] 
