@@ -84,6 +84,15 @@
     padding: 0.75rem 1rem;
     font-size: 1rem;
     border-radius: 0.5rem;
+    min-width: 200px;
+    min-height: 48px; /* Touch-friendly minimum height */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
 .input-group button {
@@ -133,12 +142,24 @@
         max-height: 50vh;
     }
     
+    .input-group {
+        gap: 0.75rem; /* Slightly larger gap for better touch targets */
+    }
+    
     .input-group input {
         font-size: 16px; /* Prevents zoom on iOS */
+        min-width: 150px; /* Reduced min-width for mobile */
+        padding: 1rem; /* Larger padding for easier touch interaction */
+        min-height: 52px; /* Larger touch target on mobile */
     }
     
     .input-group button {
-        min-width: 50px;
-        max-width: 50px;
+        min-width: 52px;
+        max-width: 52px;
+        min-height: 52px; /* Match input height for consistency */
+    }
+    
+    .chat-form {
+        padding: 1rem 0.5rem; /* Better mobile padding */
     }
 }
