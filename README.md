@@ -164,8 +164,12 @@ FAQbot/
 ```
 
 
-### Adding New Categories
+### Adding or Deleting New FAQ Categories
 
-1. Create a new `.txt` file in `faqs/` directory
-2. Add the category to `FAQCategory` enum in `app/models/schemas.py`
+1. Create or delete a new `.txt` file in `faqs/` directory (filename becomes the category name)
+2. Add or delete a category description to `faqs/categories.json`
 3. Restart the application
+
+**Example:**
+- Add `faqs/pricing.txt` → Creates "pricing" category
+- Add entry in `faqs/categories.json`: `"pricing": "pricing plans, cost estimates, billing"`

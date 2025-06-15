@@ -4,18 +4,8 @@ from enum import Enum
 import time
 
 
-class FAQFileCategory(str, Enum):
-    """Categories that have corresponding FAQ files."""
-    SALES = "sales"
-    LABS = "labs"
-    REPORTS = "reports"
-
-
 class ResponseCategory(str, Enum):
-    """All possible response categories."""
-    SALES = "sales"
-    LABS = "labs"
-    REPORTS = "reports"
+    """Response categories for non-FAQ responses."""
     DATABASE_STATS = "database_stats"
     OUT_OF_SCOPE = "out_of_scope"
 
@@ -27,7 +17,7 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     answer: str
-    category: ResponseCategory
+    category: str  # Changed from ResponseCategory to str to support dynamic FAQ categories
     conversation_id: str
     processing_time: float
 

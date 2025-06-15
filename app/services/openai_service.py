@@ -151,8 +151,9 @@ IMPORTANT RULES:
         category = arguments.get("category")
         question = arguments.get("question")
         
-        if not category or category not in ["sales", "labs", "reports"]:
-            raise ValueError(f"Invalid FAQ category: {category}")
+        if not category or not self.faq_service.is_valid_category(category):
+            available_categories = self.faq_service.get_available_categories()
+            raise ValueError(f"Invalid FAQ category: {category}. Available categories: {available_categories}")
         
         faq_content = self.faq_service.get_faq_content(category)
         if not faq_content:

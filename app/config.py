@@ -18,6 +18,10 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     database_csv_path: str = "data/microbe_database.csv"
     
+    # FAQ Configuration
+    faq_directory_path: str = "faqs"
+    faq_file_extension: str = ".txt"
+    
     # Server Configuration
     host: str = "0.0.0.0"
     port: int = 8080
