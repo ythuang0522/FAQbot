@@ -53,7 +53,13 @@ class ChatBot {
             metaInfo += '</div>';
         }
         
-        messageDiv.innerHTML = `${content}${metaInfo}`;
+        // Convert Markdown formatting to HTML
+        const formattedContent = content
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  // **bold** -> <strong>bold</strong>
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')              // *italic* -> <em>italic</em>
+            .replace(/\n/g, '<br>');                           // newlines -> <br>
+
+        messageDiv.innerHTML = `${formattedContent}${metaInfo}`;
         this.messagesContainer.appendChild(messageDiv);
         this.scrollToBottom();
     }
