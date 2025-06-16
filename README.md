@@ -20,8 +20,6 @@ sequenceDiagram
     participant OAI as 🧠 OpenAI API
     participant Data as 📄 Data Sources
 
-    Note over WU,LU: Two Interface Options
-
     rect rgb(230, 245, 255)
         Note over WU,F: Web Interface Flow
         WU->>F: Submit question
@@ -34,8 +32,6 @@ sequenceDiagram
         L->>API: POST /webhook/line
     end
 
-    Note over API,Data: Shared Core Processing
-
     API->>OS: get_faq_answer()
     
     Note over OS,OAI: Step 1: Function Selection
@@ -43,7 +39,7 @@ sequenceDiagram
     OAI-->>OS: tool_calls[]
     
     Note over OS,Data: Step 2: Execute Functions
-    OS->>Data: Execute selected functions
+    OS->>Data: Execute selected functions to retrieve data
     Data-->>OS: Function results
     
     Note over OS,OAI: Step 3: Generate Answer
