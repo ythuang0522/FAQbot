@@ -148,6 +148,7 @@ FAQbot/
 │   ├── config.py         # Configuration management
 │   └── main.py           # FastAPI application
 ├── faqs/                 # FAQ content files
+│   ├── categories.json   # FAQ category descriptions
 │   ├── sales.txt         # Sales FAQ content
 │   ├── labs.txt          # Labs FAQ content
 │   └── reports.txt       # Reports FAQ content
