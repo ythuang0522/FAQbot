@@ -274,7 +274,7 @@ IMPORTANT RULES:
         processing_time = time.time() - start_time
         
         return {
-            "answer": "很抱歉，您的問題超出了我的知識範圍，請聯繫資訊團隊擴充此知識。",
+            "answer": "抱歉此問題不在知識庫，請聯繫FAS人員回答。",
             "category": "out_of_scope",
             "conversation_id": conversation_id,
             "processing_time": round(processing_time, 3)

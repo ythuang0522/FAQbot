@@ -68,9 +68,8 @@ class FAQService:
         available_categories = self.get_available_categories()
         
         if not available_categories:
-            logger.warning("No FAQ categories available, FAQ function will be disabled")
-            # Return only database functions if no FAQ categories exist
-            return self._build_database_functions()
+            logger.error("No FAQ categories available, FAQ function will be disabled")
+            return []
         
         # Build category descriptions
         category_descriptions = []
@@ -107,7 +106,8 @@ class FAQService:
         ]
         
         # Add database functions
-        functions.extend(self._build_database_functions())
+        # TODO: need to replace the current csv file with the real postgres database
+        # functions.extend(self._build_database_functions())
         return functions
     
     def _build_database_functions(self) -> List[Dict]:
