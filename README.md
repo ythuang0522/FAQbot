@@ -115,7 +115,7 @@ OPENAI_TEMPERATURE=0.1
 uvicorn app.main:app --reload
 
 # Production
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+uvicorn app.main:app --host 0.0.0.0 --port 8080 --workers 4
 ```
 
 5. **Access the interfaces:**
@@ -130,6 +130,35 @@ http://localhost:8080
 2. Get your Channel Access Token and Channel Secret
 3. Set the webhook URL to: `https://your-domain.com/webhook/line`
 4. Add the credentials to your `.env` file
+
+### 🌐 Line Webhook Tunneling with ngrok
+
+You can use ngrok to create a secure tunnel to your local uvicorn server, allowing Line to send webhook messages to your local development environment.
+
+**Install ngrok:**
+```bash
+# macOS (using Homebrew)
+brew install ngrok
+
+# Or download from https://ngrok.com/download
+```
+
+**Start the tunnel:**
+```bash
+# Start your uvicorn server first
+uvicorn app.main:app --reload --port 8080
+
+# In a separate terminal, start ngrok tunnel
+ngrok http 8080
+```
+
+**Configure Line Webhook:**
+1. Copy the HTTPS URL from ngrok output (e.g., `https://abc123.ngrok.io`)
+2. Set your Line Bot webhook URL to: `https://71f75736a0e8.ngrok-free.app/callback`
+(https://manager.line.biz/account/@451fwued/setting/messaging-api)
+
+**Important Notes:**
+- The ngrok URL changes each time you restart ngrok (unless you have a paid account)
 
 ## 📁 Project Structure
 

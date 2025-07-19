@@ -11,10 +11,8 @@ settings = get_settings()
 class FAQService:
     def __init__(self, faq_dir: Optional[str] = None):
         self.faq_dir = Path(faq_dir or settings.faq_directory_path)
-        self.faq_content: Dict[str, str] = {}
         self.category_metadata: Dict[str, str] = {}
         self.load_category_metadata()
-        self.load_faq_files()
     
     def load_category_metadata(self) -> None:
         """Load optional category metadata for descriptions."""
@@ -30,37 +28,34 @@ class FAQService:
             logger.warning(f"Error loading category metadata: {e}")
             self.category_metadata = {}
     
-    def load_faq_files(self) -> None:
-        """Load all FAQ files into memory with dynamic category discovery."""
+    def get_available_categories(self) -> List[str]:
+        """Get list of all available FAQ categories by scanning directory."""
         try:
             pattern = f"*{settings.faq_file_extension}"
+            categories = []
             for faq_file in self.faq_dir.glob(pattern):
-                # Skip the metadata file
-                if faq_file.name == "categories.json":
-                    continue
-                    
-                category = faq_file.stem
-                content = faq_file.read_text(encoding="utf-8")
-                self.faq_content[category] = content
-                logger.info(f"Loaded FAQ category: {category}")
-                
-            if not self.faq_content:
-                logger.warning(f"No FAQ files found in {self.faq_dir}")
+                if faq_file.name != "categories.json":
+                    categories.append(faq_file.stem)
+            return categories
         except Exception as e:
-            logger.error(f"Error loading FAQ files: {e}")
-            raise
-    
-    def get_available_categories(self) -> List[str]:
-        """Get list of all available FAQ categories."""
-        return list(self.faq_content.keys())
+            logger.error(f"Error scanning FAQ directory: {e}")
+            return []
     
     def get_faq_content(self, category: str) -> str:
-        """Get FAQ content for a specific category."""
-        return self.faq_content.get(category, "")
+        """Get FAQ content for a specific category by reading from file."""
+        try:
+            faq_file = self.faq_dir / f"{category}{settings.faq_file_extension}"
+            if faq_file.exists():
+                return faq_file.read_text(encoding="utf-8")
+            return ""
+        except Exception as e:
+            logger.error(f"Error reading FAQ file for category {category}: {e}")
+            return ""
     
     def is_valid_category(self, category: str) -> bool:
         """Check if a category is valid (has corresponding FAQ file)."""
-        return category in self.faq_content
+        faq_file = self.faq_dir / f"{category}{settings.faq_file_extension}"
+        return faq_file.exists()
     
     def get_category_description(self, category: str) -> str:
         """Get description for a category, with fallback to generic description."""

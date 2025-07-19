@@ -20,7 +20,7 @@ async def lifespan(app: FastAPI):
     setup_logging(settings.log_level)
     logger = get_logger(__name__)
     logger.info(f"Starting {settings.app_name} v{settings.app_version}")
-    
+        
     yield
     
     # Shutdown
@@ -100,6 +100,8 @@ app.include_router(api_router)
 
 # Static files
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
+
+settings.print_config()
 
 # Global exception handler
 @app.exception_handler(Exception)

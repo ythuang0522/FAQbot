@@ -91,8 +91,8 @@ IMPORTANT RULES:
                 ],
                 tools=functions,
                 tool_choice="auto",
-                temperature=settings.openai_temperature,
-                max_tokens=settings.openai_max_tokens
+                #temperature=settings.openai_temperature,
+                #max_tokens=settings.openai_max_tokens
             )
             
             api_time = time.time() - api_start
@@ -240,8 +240,8 @@ IMPORTANT RULES:
             response = self.client.chat.completions.create(
                 model=settings.openai_model,
                 messages=messages,
-                temperature=settings.openai_temperature,
-                max_tokens=settings.openai_max_tokens
+                #temperature=settings.openai_temperature,
+                #max_tokens=settings.openai_max_tokens
             )
             
             answer = response.choices[0].message.content.strip()

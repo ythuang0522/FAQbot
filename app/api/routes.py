@@ -112,5 +112,25 @@ async def line_webhook(request: Request):
     
     return {"status": "ok"}
 
+
+@api_router.get("/api/faq-categories")
+async def get_faq_categories():
+    """Get list of available FAQ categories."""
+    try:
+        # Use OpenAIService's FAQService instance
+        openai_service = OpenAIService()
+        categories = openai_service.faq_service.get_available_categories()
+        return {"categories": categories, "count": len(categories)}
+    except Exception as e:
+        logger.error(f"Error getting FAQ categories: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=ErrorResponse(
+                error="Failed to get FAQ categories",
+                detail=str(e),
+                error_code="FAQ_CATEGORIES_ERROR"
+            ).dict()
+        )
+
 # Export routers for import in main.py
 __all__ = ["api_router"] 

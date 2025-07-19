@@ -2,12 +2,16 @@ from functools import lru_cache
 from typing import List
 from pydantic_settings import BaseSettings
 from pydantic import Field
+import os
+from app.utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class Settings(BaseSettings):
     # OpenAI Configuration
     openai_api_key: str
-    openai_model: str = "gpt-4o"
+    openai_model: str = "gpt-4.1"
     openai_max_tokens: int = 6000
     openai_temperature: float = 0.1
     
@@ -39,8 +43,12 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = False
+    
+    def print_config(self):
+        """Print current configuration for debugging."""
+        logger.info(f"Open AI Model: {self.openai_model}")
 
 
-@lru_cache()
+
 def get_settings() -> Settings:
-    return Settings() 
+    return Settings()
